@@ -1,19 +1,9 @@
 #include <iostream>
 #include "../CheatDriver/DriverConfig.h"
+#include "../CheatDriver/IOCTLCodes.h"
 #include "Process.h"
 #include <windows.h>
 #include <vector>
-
-#define IOCTL_DRIVER_COPY_MEMORY ((ULONG)CTL_CODE(DRIVER_DEVICE_TYPE, 0x808, METHOD_BUFFERED, FILE_SPECIAL_ACCESS))
-
-typedef struct _DRIVER_COPY_MEMORY {
-	ULONGLONG Source; // Source buffer address.
-	ULONGLONG Target; // Target buffer address.
-	ULONGLONG Size; // Buffer size.
-	ULONG ProcessId; // Target process ID.
-	BOOLEAN Write; // TRUE if writing, FALSE if reading.
-} DRIVER_COPY_MEMORY, * PDRIVER_COPY_MEMORY;
-
 
 void thirdPerson() {
 
@@ -37,7 +27,7 @@ int main()
 		printf("Error: 0x%X\n", error);
 		return 1;
 	}
-
+	printf("Driver handle: %lu\n", driver);
 	DWORD tf2Id = GetProcessId(L"hl2.exe");
 	printf("TF2 ID: %lu\n", tf2Id);
 	DWORD moduleBase = GetModuleBaseAddress(tf2Id, L"client.dll");

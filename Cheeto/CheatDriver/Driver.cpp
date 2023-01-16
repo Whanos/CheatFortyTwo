@@ -1,5 +1,5 @@
+#include <ntifs.h>
 #include "Driver.h"
-#include <ntddk.h>
 #include "DriverConfig.h"
 #include "IOCTLHandler.h"
 
@@ -68,7 +68,7 @@ NTSTATUS DriverInitialize(
         &SymLink,
         status);
 
-    devobj->Flags |= DO_BUFFERED_IO;
+    SetFlag(devobj->Flags, DO_BUFFERED_IO);
 
     for (int t = 0; t <= IRP_MJ_MAXIMUM_FUNCTION; t++) //set all MajorFunction's to unsupported
         DriverObject->MajorFunction[t] = UnsupportedIo;
@@ -78,7 +78,7 @@ NTSTATUS DriverInitialize(
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = CloseIo;
     DriverObject->DriverUnload = NULL; //nonstandard way of driver loading, no unload
 
-    devobj->Flags &= ~DO_DEVICE_INITIALIZING;
+    ClearFlag(devobj->Flags, DO_DEVICE_INITIALIZING);
     return status;
 }
 
@@ -87,7 +87,6 @@ NTSTATUS DriverEntry(
 	_In_ PUNICODE_STRING RegistryPath
 )
 {
-	NTSTATUS status;
 	UNICODE_STRING driverName;
 
 	/* Due to the manual mapping these cannot be used! */
@@ -95,23 +94,7 @@ NTSTATUS DriverEntry(
 	UNREFERENCED_PARAMETER(RegistryPath);
 
 	RtlInitUnicodeString(&driverName, L"\\Driver\\OwO");
-	status = IoCreateDriver(&driverName, &DriverInitialize);
+	IoCreateDriver(&driverName, &DriverInitialize);
 
-	if (status == STATUS_OBJECT_NAME_COLLISION) {
-		DbgPrintEx(DPFLTR_DEFAULT_ID,
-			DPFLTR_INFO_LEVEL,
-			"[%s] Driver object %wZ already exists!??\r\n",
-			__FUNCTION__, &driverName
-		);
-	}
-	else {
-		DbgPrintEx(DPFLTR_DEFAULT_ID,
-			DPFLTR_INFO_LEVEL,
-			"[%s] IoCreateDriver(%wZ) = %lx\r\n",
-			__FUNCTION__,
-			&driverName,
-			status);
-	}
-
-	return status;
+	return STATUS_SUCCESS;
 }

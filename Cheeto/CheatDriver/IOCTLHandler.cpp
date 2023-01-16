@@ -3,17 +3,6 @@
 #include "IOCTLCodes.h"
 #include "Driver.h"
 
-
-extern "C" NTKERNELAPI NTSTATUS MmCopyVirtualMemory(
-	IN PEPROCESS FromProcess,
-	IN PVOID FromAddress,
-	IN PEPROCESS ToProcess,
-	OUT PVOID ToAddress,
-	IN SIZE_T BufferSize,
-	IN KPROCESSOR_MODE PreviousMode,
-	OUT PSIZE_T NumberOfBytesCopied
-);
-
 // Performs a memory copy request.
 NTSTATUS DriverCopy(IN PDRIVER_COPY_MEMORY copy) {
 
