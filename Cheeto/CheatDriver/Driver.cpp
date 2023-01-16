@@ -68,9 +68,14 @@ NTSTATUS DriverInitialize(
         &SymLink,
         status);
 
+    devobj->Flags |= DO_BUFFERED_IO;
+
+    for (int t = 0; t <= IRP_MJ_MAXIMUM_FUNCTION; t++) //set all MajorFunction's to unsupported
+        DriverObject->MajorFunction[t] = UnsupportedIo;
+
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = DriverDispatch;
-    DriverObject->MajorFunction[IRP_MJ_CREATE] = DriverDispatch;
-    DriverObject->MajorFunction[IRP_MJ_CLOSE] = DriverDispatch;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] = CreateIo;
+    DriverObject->MajorFunction[IRP_MJ_CLOSE] = CloseIo;
     DriverObject->DriverUnload = NULL; //nonstandard way of driver loading, no unload
 
     devobj->Flags &= ~DO_DEVICE_INITIALIZING;

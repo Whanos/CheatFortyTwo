@@ -82,3 +82,25 @@ NTSTATUS DriverDispatch(_In_ PDEVICE_OBJECT DeviceObject, _Inout_ PIRP Irp) {
 
 	return status;
 }
+
+NTSTATUS CreateIo(PDEVICE_OBJECT device_obj, PIRP irp) {
+	UNREFERENCED_PARAMETER(device_obj);
+
+	IoCompleteRequest(irp, IO_NO_INCREMENT);
+	return irp->IoStatus.Status;
+}
+
+NTSTATUS CloseIo(PDEVICE_OBJECT device_obj, PIRP irp) {
+	UNREFERENCED_PARAMETER(device_obj);
+
+	IoCompleteRequest(irp, IO_NO_INCREMENT);
+	return irp->IoStatus.Status;
+}
+
+NTSTATUS UnsupportedIo(PDEVICE_OBJECT device_obj, PIRP irp) {
+	UNREFERENCED_PARAMETER(device_obj);
+
+	irp->IoStatus.Status = STATUS_NOT_SUPPORTED;
+	IoCompleteRequest(irp, IO_NO_INCREMENT);
+	return irp->IoStatus.Status;
+}
